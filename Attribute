@@ -1,0 +1,64 @@
+
+    [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
+    public class AccessTokenAuthorizationAttribute : Attribute
+    {
+        public string Feature { get; set; }
+
+        public AccessTokenAuthorizationAttribute()
+        {
+        }
+    }
+
+    public class AccessTokenAuthorizationFilter : IAuthorizationFilter
+    {
+        public AccessTokenAuthorizationFilter()
+        {
+           
+        }
+
+        public Task<HttpResponseMessage> ExecuteAuthorizationFilterAsync(HttpActionContext actionContext,
+            CancellationToken cancellationToken, Func<Task<HttpResponseMessage>> continuation)
+        {
+            var attributeList = actionContext.ActionDescriptor.GetCustomAttributes<AccessTokenAuthorizationAttribute>()
+                .ToList();
+            if (attributeList == null || attributeList.Count <= 0)
+            {
+                return continuation();
+            }
+            var tmp = new List<string>() as IEnumerable<string>;
+            actionContext.Request.Headers.TryGetValues("Toekn", out tmp);
+
+            try
+            {
+                foreach (var attribute in attributeList)
+                {
+                    // get attribute properties
+                    var feature = attribute.GetType().GetProperty("Feature")?.GetValue(attribute, null) as string;
+
+                    // do validation
+                   
+
+                // process response
+                if (responseCode != Success)
+                {
+                    
+
+                    var errorResponse = actionContext.Request.CreateResponse(HttpStatusCode.Unauthorized);
+                    return Task.FromResult(errorResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+               
+            }
+
+            return continuation();
+        }
+
+        private bool ValidateAccessToken(HttpRequestHeaders headers, string feature)
+        {
+            
+        }
+        }
+
+    
